@@ -94,7 +94,6 @@ def add_func():
 def add_task(name = None, wybor= None,entry= None,pon= None,wt= None,sr= None,cz= None,pt= None,sb= None,nd= None):
         task = {'name': name, 'repeat': wybor, 'days': entry, "daysofweek":[pon,wt,sr,cz,pt,sb,nd]}
 
-        print(task)
         requests.post("http://192.168.50.200:5000/add_task", json=task)
 def main_win():
     for widget in root.winfo_children():
