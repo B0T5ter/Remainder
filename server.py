@@ -37,7 +37,7 @@ def get_specific_tasks():
     with open(filename, "r") as f:
         data = json.load(f)
     
-    for task in data:
+    for task in data['tasks']:
         if task['timestamp'] == specific_data:
             return jsonify(task)
         
