@@ -16,7 +16,12 @@ def add_to_json(name, repeat,days,daysofweek):
 @app.route("/add_task", methods=["POST"])
 def add_task():
     data = request.json
-    add_to_json(data)
+    add_to_json(
+    data["name"],
+    data["repeat"],
+    data["days"],
+    data["daysofweek"]
+)
 
 @app.route("/get_tasks", methods=["GET"])
 def get_tasks():
