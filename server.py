@@ -1,5 +1,9 @@
 from flask import Flask, request, jsonify
 import json
+import time
+from datetime import datetime
+import threading
+
 app = Flask(__name__)
 
 filename = "tasks.json"
@@ -7,8 +11,8 @@ filename = "tasks.json"
 def add_to_json(name, repeat,days,daysofweek):
     with open(filename, "r") as f:
         data = json.load(f)
-
-    data['tasks'].append({'name': name, 'repeat': repeat, 'days': days, "daysofweek":daysofweek})
+    timestamp = time.time()  
+    data['tasks'].append({'name': name, 'repeat': repeat, 'days': days, "daysofweek":daysofweek, 'timestamp':timestamp})
 
     with open(filename, "w") as f:
         json.dump(data, f, indent=4)
@@ -28,5 +32,36 @@ def get_tasks():
     #return jsonify(tasks)
     pass
 
+def checkTask():
+    #if datetime.now().hour in [0,12,16,20]:
+        with open(filename, "r") as f:
+            data = json.load(f)
+
+        for task in data["tasks"]:
+            if task["repeat"] == "Every x days":
+                days_passed = int((time.time() - task['timestamp']) / (24*60*60))
+                if days_passed%task["days"] == 0:
+                    sendNotification(task)
+
+            
+            elif task["repeat"] == "Every x":
+                dayofweek = datetime.now().weekday()
+                if task['daysofweek'][dayofweek] == 1:
+                    sendNotification(task)
+            
+            if task["repeat"] == "Every x day of month":
+                dayofmonth = datetime.now().day
+                if task["days"] == dayofmonth:
+                    sendNotification(task)
+        time.sleep(1)
+
+def sendNotification(task):
+    print(task["name"])
+
+def backgroundcheck():
+    thread = threading.Thread(target=checkTask, daemon=True)
+    thread.start()
+
 if __name__ == "__main__":
+    backgroundcheck()
     app.run(host="0.0.0.0", port=5000)  # dostępny w sieci lokalnej
