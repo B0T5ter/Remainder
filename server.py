@@ -32,15 +32,18 @@ def add_task():
 
 @app.route("/get_specific_tasks", methods=["POST"])
 def get_specific_tasks():
-    specific_data = request.json
-    print(specific_data)
+    specific_data = request.json  # np. {"timestamp": 1765051215.5502088}
+    target_ts = specific_data.get("timestamp")  # bierzemy tylko wartość
+
     with open(filename, "r") as f:
         data = json.load(f)
     
     for task in data['tasks']:
-        if task['timestamp'] == specific_data:
+        if task['timestamp'] == target_ts:
             return jsonify(task)
-        
+    
+    # jeśli nie znaleziono
+    return jsonify({"error": "task not found"}), 404
 @app.route("/get_today_tasks", methods=["GET"])
 def get_today_tasks():
     taskstoreturn = []
