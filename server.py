@@ -29,11 +29,18 @@ def add_task():
     
     )
     return jsonify({"status": "ok"})
-@app.route("/get_tasks", methods=["GET"])
-def get_tasks():
-    #return jsonify(tasks)
-    pass
 
+@app.route("/get_specific_tasks", methods=["GET"])
+def get_specific_tasks():
+    specific_data = request.json
+
+    with open(filename, "r") as f:
+        data = json.load(f)
+    
+    for task in data:
+        if task['timestamp'] == specific_data:
+            return jsonify(task)
+        
 @app.route("/get_today_tasks", methods=["GET"])
 def get_today_tasks():
     taskstoreturn = []
