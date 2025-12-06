@@ -3,6 +3,7 @@ import json
 import time
 from datetime import datetime
 import threading
+import requests
 
 app = Flask(__name__)
 
@@ -25,6 +26,7 @@ def add_task():
     data["repeat"],
     data["days"],
     data["daysofweek"]
+    return jsonify({"status": "ok"})
 )
 
 @app.route("/get_tasks", methods=["GET"])
@@ -57,6 +59,8 @@ def checkTask():
 
 def sendNotification(task):
     print(task["name"])
+    webhook_url = 'https://discord.com/api/webhooks/1446938714520420443/MJbFXdq9rdM3AJ60hw7sXqpOn0-Vor0uj2VWxLzcey4yV0PxyIsF2HDzPfNZaw0IUJ4W'
+    requests.post(webhook_url, json={"content": task["name"]})
 
 def backgroundcheck():
     thread = threading.Thread(target=checkTask, daemon=True)
