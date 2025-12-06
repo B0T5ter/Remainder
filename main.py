@@ -5,7 +5,7 @@ root = tk.Tk()
 root.title("Moja apka")
 root.geometry("400x500")
 
-def edit_task(timestamp):
+def edit_func(timestamp):
     req = requests.post("http://192.168.50.200:5000/get_specific_tasks", json=timestamp)
     data = req.json()
 
@@ -38,7 +38,7 @@ def edit_task(timestamp):
 
     tk.Button(root, text="Back", command=main_win, font=("Arial", 15)).grid(row=0, column=1, padx=5, pady=5,sticky='ew')
 
-    tk.Button(root, text="Edit", command=lambda: add_task(nameEntry.get(),wybor.get(),entryoption.get(),pon.get(), wt.get(),sr.get(),cz.get(),pt.get(),sb.get(),nd.get()), font=("Arial", 15)).grid(row=1, column=1, padx=5, pady=5, sticky='ew')
+    tk.Button(root, text="Change", command=lambda: change_task(nameEntry.get(),wybor.get(),entryoption.get(),pon.get(), wt.get(),sr.get(),cz.get(),pt.get(),sb.get(),nd.get(), data['timestamp']), font=("Arial", 15)).grid(row=1, column=1, padx=5, pady=5, sticky='ew')
 
 
     nameEntry = tk.Entry(root)
@@ -186,6 +186,10 @@ def add_func():
     wybor.trace("w", update_checks)
     update_checks()
 
+def change_task(name = None, wybor= None,entry= None,pon= None,wt= None,sr= None,cz= None,pt= None,sb= None,nd= None, timestamp = None):
+    task = {'name': name, 'repeat': wybor, 'days': entry, "daysofweek":[pon,wt,sr,cz,pt,sb,nd], 'timestamp':timestamp}
+    requests.post("http://192.168.50.200:5000/change_task", json=task)
+    print("change")
 def add_task(name = None, wybor= None,entry= None,pon= None,wt= None,sr= None,cz= None,pt= None,sb= None,nd= None):
         task = {'name': name, 'repeat': wybor, 'days': entry, "daysofweek":[pon,wt,sr,cz,pt,sb,nd]}
 
@@ -214,7 +218,7 @@ def main_win():
 
     tk.Button(root, text="Add", command=add_func, font=("Arial", 15)).grid(row=0, column=1, padx=5, pady=5,sticky='ew')
     tk.Button(root, text="List all", command=add_func, font=("Arial", 15)).grid(row=1, column=1, padx=5, pady=5,sticky='ew')
-    tk.Button(root, text="Edit", command=lambda: edit_task(idtimestamp[listbox.curselection()[0]]), font=("Arial", 15)).grid(row=2, column=1, padx=5, pady=5,sticky='ew')
+    tk.Button(root, text="Edit", command=lambda: edit_func(idtimestamp[listbox.curselection()[0]]), font=("Arial", 15)).grid(row=2, column=1, padx=5, pady=5,sticky='ew')
 if __name__ == "__main__":
     main_win()
     root.mainloop()

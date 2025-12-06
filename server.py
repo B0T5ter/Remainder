@@ -56,6 +56,9 @@ def change_task():
             task['daysofweek'] = specific_data['daysofweek']
             return jsonify({"status": "ok"})
         
+    with open(filename, "w") as f:
+                json.dump(data, f, indent=4)
+                
 @app.route("/get_today_tasks", methods=["GET"])
 def get_today_tasks():
     taskstoreturn = []
