@@ -77,7 +77,6 @@ def edit_task(timestamp):
                 w.pack_forget()
             labeloption1.pack(anchor='w')
             entryoption.pack(anchor='w',padx=10)
-            entryoption.insert(0,data['days'])
 
         elif wybor.get() == "Every x":
             for w in frame_checks.winfo_children():

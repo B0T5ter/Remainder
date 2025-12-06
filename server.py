@@ -40,6 +40,21 @@ def get_specific_tasks():
     for task in data['tasks']:
         if task['timestamp'] == specific_data:
             return jsonify(task)
+
+@app.route("/change_task", methods=["POST"])
+def change_task():
+    specific_data = request.json
+
+    with open(filename, "r") as f:
+        data = json.load(f)
+    
+    for task in data['tasks']:
+        if task['timestamp'] == specific_data['timestamp']:
+            task['name'] = specific_data['name']
+            task['repeat'] = specific_data['repeat']
+            task['days'] = specific_data['days']
+            task['daysofweek'] = specific_data['daysofweek']
+            return jsonify({"status": "ok"})
         
 @app.route("/get_today_tasks", methods=["GET"])
 def get_today_tasks():
