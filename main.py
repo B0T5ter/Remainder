@@ -214,7 +214,7 @@ def add_func():
     update_checks()
 
 def delete_func(timestamp):
-    pass
+    requests.post("http://192.168.50.200:5000/delete_task", json={"timestamp": timestamp})
 
 def change_task(name = None, wybor= None,entry= None,pon= None,wt= None,sr= None,cz= None,pt= None,sb= None,nd= None, timestamp = None, backTo = None):
     task = {'name': name, 'repeat': wybor, 'days': entry, "daysofweek":[pon,wt,sr,cz,pt,sb,nd], 'timestamp':timestamp}

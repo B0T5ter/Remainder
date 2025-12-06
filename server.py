@@ -58,17 +58,24 @@ def change_task():
                 json.dump(data, f, indent=4)
             return jsonify({"status": "ok"})
 
-@app.route("/delete_task", methods=["GET"])
+@app.route("/delete_task", methods=["POST"])
 def delete_task():
+    # otrzymujemy {"timestamp": 1234567890}
     specific_data = request.json
     ts_to_delete = specific_data['timestamp']
-    
+
     with open(filename, "r") as f:
         data = json.load(f)
+
+    # filtrujemy listę, zostawiamy tylko te, które nie mają tego timestampu
     data['tasks'] = [task for task in data['tasks'] if task['timestamp'] != ts_to_delete]
 
+    # zapisujemy zmieniony plik
     with open(filename, "w") as f:
         json.dump(data, f, indent=4)
+
+    return jsonify({"status": "ok"})
+
 @app.route("/get_all_tasks", methods=["GET"])
 def get_all_tasks():
     with open(filename, "r") as f:
