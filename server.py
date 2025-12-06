@@ -58,7 +58,13 @@ def change_task():
                 json.dump(data, f, indent=4)
             return jsonify({"status": "ok"})
 
+@app.route("/get_all_tasks", methods=["GET"])
+def get_all_tasks():
+    with open(filename, "r") as f:
+        data = json.load(f)
 
+        return jsonify(data)
+    
 @app.route("/get_today_tasks", methods=["GET"])
 def get_today_tasks():
     taskstoreturn = []

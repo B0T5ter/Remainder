@@ -4,7 +4,31 @@ import requests
 root = tk.Tk()
 root.title("Moja apka")
 root.geometry("400x500")
+def all_win():
+    for widget in root.winfo_children():
+        widget.destroy()
 
+    root.grid_columnconfigure(0, weight=1)
+    root.grid_columnconfigure(1, weight=1)
+
+    
+    tk.Label(root, text="Remainder", font=("Arial", 25), anchor="n").grid(row=0, column=0, padx=5, pady=5, sticky="ew")
+    tk.Label(root,text = "To do", font=("Arial", 20), anchor="n").grid(row=1, column=0, padx=5, pady=5, sticky="ew")
+    
+    #Listowanie rzeczy
+    listbox = tk.Listbox(root, bg='gray', font=("Arial", 15))
+    listbox.grid(row=3, column=0, padx=5, pady=5, sticky="ew")
+
+    res = requests.get("http://192.168.50.200:5000/get_all_tasks")
+    todos = res.json()
+    idtimestamp = []
+    for todo in todos:
+        listbox.insert(tk.END, todo['name'])
+        idtimestamp.append(todo['timestamp'])
+
+    tk.Button(root, text="Back", command=main_win, font=("Arial", 15)).grid(row=0, column=1, padx=5, pady=5,sticky='ew')
+    tk.Button(root, text="Delete", command=lambda: delete_func(idtimestamp[listbox.curselection()[0]]), font=("Arial", 15)).grid(row=1, column=1, padx=5, pady=5,sticky='ew')
+    tk.Button(root, text="Edit", command=lambda: edit_func(idtimestamp[listbox.curselection()[0]]), font=("Arial", 15)).grid(row=2, column=1, padx=5, pady=5,sticky='ew')
 def edit_func(timestamp):
     req = requests.post("http://192.168.50.200:5000/get_specific_tasks", json=timestamp)
     data = req.json()
@@ -51,7 +75,7 @@ def edit_func(timestamp):
     opcje = ["Every x days", "Every x", "Every x day of month"]
     dropdown = tk.OptionMenu(root, wybor, *opcje)
     dropdown.grid(row=4, column=0, padx=5, pady=4, sticky="ew")
-
+    wybor.set(data['repeat'])
     frame_checks = tk.Frame(root)
     frame_checks.grid(row=5, column=0, columnspan=2, sticky="ew")
 
@@ -185,17 +209,18 @@ def add_func():
         
     wybor.trace("w", update_checks)
     update_checks()
-
+def delete_func(timestamp):
+    pass
 def change_task(name = None, wybor= None,entry= None,pon= None,wt= None,sr= None,cz= None,pt= None,sb= None,nd= None, timestamp = None):
     task = {'name': name, 'repeat': wybor, 'days': entry, "daysofweek":[pon,wt,sr,cz,pt,sb,nd], 'timestamp':timestamp}
     requests.post("http://192.168.50.200:5000/change_task", json=task)
-    print("change")
+    main_win()
 
 def add_task(name = None, wybor= None,entry= None,pon= None,wt= None,sr= None,cz= None,pt= None,sb= None,nd= None):
-        task = {'name': name, 'repeat': wybor, 'days': entry, "daysofweek":[pon,wt,sr,cz,pt,sb,nd]}
+    task = {'name': name, 'repeat': wybor, 'days': entry, "daysofweek":[pon,wt,sr,cz,pt,sb,nd]}
 
-        requests.post("http://192.168.50.200:5000/add_task", json=task)
-        
+    requests.post("http://192.168.50.200:5000/add_task", json=task)
+    main_win()
 def main_win():
     for widget in root.winfo_children():
         widget.destroy()
@@ -219,7 +244,7 @@ def main_win():
         idtimestamp.append(todo['timestamp'])
 
     tk.Button(root, text="Add", command=add_func, font=("Arial", 15)).grid(row=0, column=1, padx=5, pady=5,sticky='ew')
-    tk.Button(root, text="List all", command=add_func, font=("Arial", 15)).grid(row=1, column=1, padx=5, pady=5,sticky='ew')
+    tk.Button(root, text="List all", command=all_win, font=("Arial", 15)).grid(row=1, column=1, padx=5, pady=5,sticky='ew')
     tk.Button(root, text="Edit", command=lambda: edit_func(idtimestamp[listbox.curselection()[0]]), font=("Arial", 15)).grid(row=2, column=1, padx=5, pady=5,sticky='ew')
 if __name__ == "__main__":
     main_win()
