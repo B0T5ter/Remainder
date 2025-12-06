@@ -26,9 +26,9 @@ def add_task():
     data["repeat"],
     data["days"],
     data["daysofweek"]
+    
+    )
     return jsonify({"status": "ok"})
-)
-
 @app.route("/get_tasks", methods=["GET"])
 def get_tasks():
     #return jsonify(tasks)
