@@ -9,15 +9,8 @@ app = Flask(__name__)
 
 filename = "tasks.json"
 
-def add_to_json(name, repeat,days,daysofweek):
-    with open(filename, "r") as f:
-        data = json.load(f)
-    timestamp = time.time()  
-    data['tasks'].append({'name': name, 'repeat': repeat, 'days': days, "daysofweek":daysofweek, 'timestamp':timestamp})
 
-    with open(filename, "w") as f:
-        json.dump(data, f, indent=4)
-
+#Adding task to file
 @app.route("/add_task", methods=["POST"])
 def add_task():
     data = request.json
@@ -30,6 +23,7 @@ def add_task():
     )
     return jsonify({"status": "ok"})
 
+#Getting specific task data
 @app.route("/get_specific_tasks", methods=["POST"])
 def get_specific_tasks():
     specific_data = request.json
@@ -41,6 +35,7 @@ def get_specific_tasks():
         if task['timestamp'] == specific_data:
             return jsonify(task)
 
+#Changing specific task
 @app.route("/change_task", methods=["POST"])
 def change_task():
     specific_data = request.json
@@ -114,6 +109,7 @@ def get_today_tasks():
                         taskstoreturn.append(task)
     return jsonify(taskstoreturn)
 
+#Checking if it is time to notification
 def checkTask():
     while True:
         if datetime.now().hour in [0,12,16,20] and datetime.now().second == 0 and datetime.now().min == 0:
@@ -138,14 +134,27 @@ def checkTask():
                         sendNotification(task)
             time.sleep(1)
 
+#Sending notification(in my case on discord)
 def sendNotification(task):
-    print(task["name"])
-    webhook_url = 'https://discord.com/api/webhooks/1446938714520420443/MJbFXdq9rdM3AJ60hw7sXqpOn0-Vor0uj2VWxLzcey4yV0PxyIsF2HDzPfNZaw0IUJ4W'
+    with open('discord_webhoo.txt', 'r') as f:
+        webhook_url = f.read()
     requests.post(webhook_url, json={"content": task["name"]})
 
+#Adding new task to file
+def add_to_json(name, repeat,days,daysofweek):
+    with open(filename, "r") as f:
+        data = json.load(f)
+    timestamp = time.time()  
+    data['tasks'].append({'name': name, 'repeat': repeat, 'days': days, "daysofweek":daysofweek, 'timestamp':timestamp})
+
+    with open(filename, "w") as f:
+        json.dump(data, f, indent=4)
+
+#Thread for checking time
 def backgroundcheck():
     thread = threading.Thread(target=checkTask, daemon=True)
     thread.start()
+
 
 if __name__ == "__main__":
     backgroundcheck()
