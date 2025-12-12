@@ -6,7 +6,7 @@ root = tk.Tk()
 root.title("Reminder")
 root.geometry("400x500")
 SERVERIP = '84.205.172.7'
-SERVERPORT = "443"
+SERVERPORT = "1002"
 
 #Widgts for showing all task in databse
 def all_win():
